@@ -49,6 +49,9 @@ function App() {
 
   return (
     <div className="App">
+      {
+        fileData.data && <img className="preview" src={fileData.data} alt="" />
+      }
       <div className="button input" onClick={handleClick}> Upload</div>
       <input
         type="file"
@@ -56,7 +59,6 @@ function App() {
         style={{ display: 'none' }}
         onChange={handleChange}
       />
-      <img src={fileData.data} alt="" />
       <div className="button output" onClick={() => {
         downloadBase64File()
       }}>Download</div>
