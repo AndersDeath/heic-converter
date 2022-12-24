@@ -1,20 +1,27 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import './App.css';
 import heic2any from 'heic2any';
 function App() {
   const fileInput = useRef(null);
+  const [ fileData, sentFileData ] = useState({
+    data: '',
+    fileName: ''
+  })
 
   const handleClick = () => {
     (fileInput as any).current.click();
   };
 
-function downloadBase64File(base64Data: any, fileName: any) {
-  const linkSource =base64Data;
-  const downloadLink = document.createElement("a");
-  downloadLink.href = linkSource;
-  downloadLink.download = fileName;
-  downloadLink.click();
-}
+  function downloadBase64File() {
+    if(fileData.data !== '' && fileData.fileName) {
+      const linkSource = fileData.data;
+      const downloadLink = document.createElement("a");
+      downloadLink.href = linkSource;
+      downloadLink.download = fileData.fileName;
+      downloadLink.click();
+    }
+   
+  }
 
   const handleChange = (e: any) => {
     console.log(e.target.files[0]);
@@ -25,7 +32,10 @@ function downloadBase64File(base64Data: any, fileName: any) {
         image.src = e.target.result;
         image.onload = (rs) => {
           let imgBase64Path = e.target.result;
-          downloadBase64File(imgBase64Path, filename.replace(/\.[^/.]+$/, "") + '.png');
+          sentFileData({
+            data: imgBase64Path,
+            fileName: filename.replace(/\.[^/.]+$/, "") + '.png'
+          })
         };
       };
     heic2any({
@@ -46,7 +56,10 @@ function downloadBase64File(base64Data: any, fileName: any) {
         style={{ display: 'none' }}
         onChange={handleChange}
       />
-      <div className="button output">Download</div>
+      <img src={fileData.data} alt="" />
+      <div className="button output" onClick={() => {
+        downloadBase64File()
+      }}>Download</div>
     </div>
   );
 }
