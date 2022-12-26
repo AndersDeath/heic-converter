@@ -72,8 +72,8 @@ function App() {
       <label htmlFor="selectFromat">
         <select name="format" id="selectFormat" value={selectedFormat} onChange={handleChangeFormat}>
           {
-            formatList.map((format: string) => {
-              return <option value={format}>{format}</option>
+            formatList.map((format: string, index: number) => {
+              return <option key={index + 1} value={format}>{format}</option>
             })
           }
         </select>
