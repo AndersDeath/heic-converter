@@ -2,6 +2,11 @@ import React, { useRef, useState } from 'react';
 import './App.css';
 import heic2any from 'heic2any';
 function App() {
+  const formatList = ['jpeg', 'png', 'gif'];
+
+  const [ selectedFormat, setSelectedFormat] = useState('jpeg');
+  
+  console.log(formatList)
   const fileInput = useRef(null);
   const [ fileData, sentFileData ] = useState({
     data: '',
@@ -11,6 +16,10 @@ function App() {
   const handleClick = () => {
     (fileInput as any).current.click();
   };
+
+  const handleChangeFormat = (e: any) => {
+    setSelectedFormat(e.target.value);
+  }
 
   function downloadBase64File() {
     if(fileData.data !== '' && fileData.fileName) {
@@ -24,7 +33,6 @@ function App() {
   }
 
   const handleChange = (e: any) => {
-    console.log(e.target.files[0]);
     const filename = e.target.files[0].name
     let reader = new FileReader();
       reader.onload = (e: any) => {
@@ -34,13 +42,13 @@ function App() {
           let imgBase64Path = e.target.result;
           sentFileData({
             data: imgBase64Path,
-            fileName: filename.replace(/\.[^/.]+$/, "") + '.png'
+            fileName: filename.replace(/\.[^/.]+$/, "") + '.' + selectedFormat
           })
         };
       };
     heic2any({
       blob: e.target.files[0],
-      toType: "image/jpeg",
+      toType: "image/" + selectedFormat,
     }).then((e) => {
       const jpegFile = e as any;
       reader.readAsDataURL(jpegFile);
@@ -50,7 +58,9 @@ function App() {
   return (
     <div className="App">
       {
-        fileData.data && <img className="preview" src={fileData.data} alt="" />
+        fileData.data && <img className="preview" src={fileData.data} alt="" onClick={() => {
+          downloadBase64File()
+        }}/>
       }
       <div className="button input" onClick={handleClick}> Upload</div>
       <input
@@ -59,6 +69,15 @@ function App() {
         style={{ display: 'none' }}
         onChange={handleChange}
       />
+      <label htmlFor="selectFromat">
+        <select name="format" id="selectFormat" value={selectedFormat} onChange={handleChangeFormat}>
+          {
+            formatList.map((format: string) => {
+              return <option value={format}>{format}</option>
+            })
+          }
+        </select>
+      </label>
       <div className="button output" onClick={() => {
         downloadBase64File()
       }}>Download</div>
